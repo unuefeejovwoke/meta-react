@@ -5,6 +5,7 @@ import Header from './header';
 import FeaturedHouse from './featured-house';
 import SearchResults from "../search-results";
 import HouseFilter from './house-filter';
+import HouseFromQuery from '../house/HouseFromQuery';
 
 function App() {
   const [allHouses, setAllHouses] = useState([]);
@@ -34,6 +35,10 @@ function App() {
         <Switch>
           <Route path='/searchresults/:country'>
             <SearchResults allHouses={allHouses}></SearchResults>
+          </Route>
+
+          <Route path="/house/:id">
+            <HouseFromQuery allHouses={allHouses}/>
           </Route>
           <Route path='/'>
              <FeaturedHouse house={featuredHouse}></FeaturedHouse>

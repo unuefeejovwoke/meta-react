@@ -1,12 +1,8 @@
-const testData = [
-    {name: "Shem", avatar_url: "https://avatars.githubusercontent.com/u/87392726?v=4", company: "@Mobicure"},
-    {name: "Ejoke", avatar_url: "https://avatars.githubusercontent.com/u/66459477?v=4", company: "@Futlink"},
-    {name: "Destiny", avatar_url: "https://avatars.githubusercontent.com/u/99897082?v=4", company: "Facebook"},
-];
+// GitHub usernames: gaearon, sophiebits, sebmarkbage, bvaughn
 
 const CardList = (props) => (
 	<div>
-  	{props.profiles.map(profile => <Card {...profile}/>)}
+  	{props.profiles.map(profile => <Card key={profile.id} {...profile}/>)}
 	</div>
 );
 
@@ -26,10 +22,23 @@ class Card extends React.Component {
 }
 
 class Form extends React.Component {
+	state = { userName: '' };
+	handleSubmit = async (event) => {
+  	event.preventDefault();
+    const resp = await axios.get(`https://api.github.com/users/${this.state.userName}`);
+    this.props.onSubmit(resp.data);
+    this.setState({ userName: '' });
+  };
 	render() {
   	return (
-    	<form action="">
-    	  <input type="text" placeholder="GitHub username"/>
+    	<form onSubmit={this.handleSubmit}>
+    	  <input 
+          type="text" 
+          value={this.state.userName}
+          onChange={event => this.setState({ userName: event.target.value })}
+          placeholder="GitHub username" 
+          required 
+        />
         <button>Add card</button>
     	</form>
     );
@@ -38,14 +47,18 @@ class Form extends React.Component {
 
 class App extends React.Component {
   state = {
-    profiles: testData,
+    profiles: [],
   };
-  
+  addNewProfile = (profileData) => {
+  	this.setState(prevState => ({
+    	profiles: [...prevState.profiles, profileData],
+    }));
+  };
 	render() {
   	return (
     	<div>
     	  <div className="header">{this.props.title}</div>
-        <Form />
+        <Form onSubmit={this.addNewProfile} />
         <CardList profiles={this.state.profiles} />
     	</div>
     );
